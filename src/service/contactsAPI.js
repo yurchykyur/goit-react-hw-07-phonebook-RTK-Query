@@ -16,17 +16,16 @@ export const contactsApi = createApi({
         return {
           url: `/${id}`,
           method: 'DELETE',
-          // id,
         };
       },
       invalidatesTags: ['Contacts'],
     }),
     addContacts: builder.mutation({
-      query(contact) {
+      query(newContact) {
         return {
           url: ``,
           method: 'POST',
-          contact,
+          newContact,
         };
       },
       invalidatesTags: ['Contacts'],
