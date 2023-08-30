@@ -5,28 +5,24 @@ import {
   DeleteBtn,
   ListElement,
 } from 'components/ContactList/ContactList.styled';
-import {
-  contactsOperations,
-  contactsSelectors,
-} from 'components/redux/contacts';
-import { useDispatch, useSelector } from 'react-redux';
+
+import { useDeleteContactsMutation } from 'service/contactsAPI';
 
 export default function PhonebookListItem({ id, name, number }) {
-  const dispatch = useDispatch();
-  const isDeleting = useSelector(contactsSelectors.selectIsLoading);
+  const [deleteContact, resultDeleteContact] = useDeleteContactsMutation();
 
   const deleteContacts = id => {
-    dispatch(contactsOperations.fetchDeleteContacts(id));
+    console.log(id);
+    deleteContact(id);
   };
 
   return (
     <ListElement>
+      {resultDeleteContact.isLoading && <h1>Deleting ...</h1>}
       <ContactItemWrapper>
         <ContactItemName>{name}</ContactItemName>
         <ContactItemNum href={`tel:${number}`}>{number}</ContactItemNum>
-        <DeleteBtn onClick={() => deleteContacts(id)} disabled={isDeleting}>
-          Delete
-        </DeleteBtn>
+        <DeleteBtn onClick={() => deleteContacts(id)}>Delete</DeleteBtn>
       </ContactItemWrapper>
     </ListElement>
   );

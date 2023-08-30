@@ -1,5 +1,3 @@
-import { useDispatch, useSelector } from 'react-redux';
-
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 
@@ -13,7 +11,10 @@ import {
 } from './ContactForm.styled';
 
 import { toastifyMessage } from 'service';
-import { contactsSelectors, contactsOperations } from '../redux/contacts';
+import {
+  useAddContactsMutation,
+  useGetContactsQuery,
+} from 'service/contactsAPI';
 
 const addContactSchema = Yup.object().shape({
   name: Yup.string()
@@ -27,9 +28,8 @@ const addContactSchema = Yup.object().shape({
 });
 
 export default function ContactForm() {
-  const contacts = useSelector(contactsSelectors.selectContacts);
-  const isLoading = useSelector(contactsSelectors.selectIsLoading);
-  const dispatch = useDispatch();
+  const { data: contacts } = useGetContactsQuery();
+  const [updateContacts, result] = useAddContactsMutation();
 
   const handleFormSubmit = (newContact, { resetForm }) => {
     const { name } = newContact;
@@ -45,8 +45,8 @@ export default function ContactForm() {
 
       return;
     }
-
-    dispatch(contactsOperations.fetchAddContacts(newContact));
+    console.log(newContact);
+    updateContacts(newContact);
     resetForm();
   };
 
@@ -73,7 +73,7 @@ export default function ContactForm() {
               />
               <StyledErrorMessage component="div" name="number" />
             </FormInputLabel>
-            <FormSubmitBtn type="submit" disabled={isLoading}>
+            <FormSubmitBtn type="submit" disabled={result.isLoading}>
               Add contact
             </FormSubmitBtn>
           </StyledForm>

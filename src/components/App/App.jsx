@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -18,19 +17,21 @@ import {
   OvalWrapper,
 } from './App.styled';
 
-import {
-  contactsOperations,
-  contactsSelectors,
-} from 'components/redux/contacts';
+import * as Service from 'service';
 
 export default function App() {
-  const contacts = useSelector(contactsSelectors.selectContacts);
-  const isLoading = useSelector(contactsSelectors.selectIsLoading);
-  const dispatch = useDispatch();
+  const {
+    data: contacts,
+    isLoading,
+    isError,
+    error,
+  } = Service.contactsAPI.useGetContactsQuery();
 
-  useEffect(() => {
-    dispatch(contactsOperations.fetchContacts());
-  }, [dispatch]);
+  if (isError) {
+    Service.toastifyMessage.toastError(
+      `${error.data}. Status - ${error.status}. Something went wrong, please try again later.`
+    );
+  }
 
   return (
     <AppContainer>
@@ -39,7 +40,7 @@ export default function App() {
       <SecondTitle>Contacts</SecondTitle>
       <Filter />
       <ContactAmount></ContactAmount>
-      {contacts.length > 0 ? (
+      {contacts?.length > 0 ? (
         <ContactList />
       ) : (
         <Notification

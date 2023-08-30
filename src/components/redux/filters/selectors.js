@@ -1,18 +1,17 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import { contactsSelectors } from '../contacts';
+import { useGetContactsQuery } from 'service/contactsAPI';
 
 const selectFilter = state => state.filter;
 
-const selectFilteredContacts = createSelector(
-  [contactsSelectors.selectContacts, selectFilter],
-  (contacts, valueFilter) => {
-    const normalizedFilterQuery = valueFilter.toLowerCase();
+const selectFilteredContacts = createSelector([selectFilter], valueFilter => {
+  const { data } = useGetContactsQuery();
 
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilterQuery)
-    );
-  }
-);
+  const normalizedFilterQuery = valueFilter.toLowerCase();
+
+  return data?.filter(contact =>
+    contact.name.toLowerCase().includes(normalizedFilterQuery)
+  );
+});
 
 export { selectFilter, selectFilteredContacts };

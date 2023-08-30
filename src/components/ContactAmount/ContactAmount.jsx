@@ -1,17 +1,15 @@
-import { useSelector } from 'react-redux';
+import { useGetContactsQuery } from 'service/contactsAPI';
 
 import { TotalContactsText, TotalContactsNum } from './ContactAmount.styled';
 
-import { contactsSelectors } from 'components/redux/contacts';
-
 export default function ContactAmount() {
-  const contacts = useSelector(contactsSelectors.selectContacts);
-
-  const contactsAmount = contacts.length;
+  const { data: contacts, isSuccess } = useGetContactsQuery();
 
   return (
-    <TotalContactsText>
-      Contacts amount: <TotalContactsNum>{contactsAmount}</TotalContactsNum>
-    </TotalContactsText>
+    isSuccess && (
+      <TotalContactsText>
+        Contacts amount: <TotalContactsNum>{contacts.length}</TotalContactsNum>
+      </TotalContactsText>
+    )
   );
 }
