@@ -22,12 +22,6 @@ export default function App() {
     error,
   } = Service.contactsAPI.useGetContactsQuery();
 
-  if (isError) {
-    Service.toastifyMessage.toastError(
-      `${error.data}. Status - ${error.status}. Something went wrong, please try again later.`
-    );
-  }
-
   return (
     <AppContainer>
       <MainTitle>Phonebook</MainTitle>
@@ -43,6 +37,12 @@ export default function App() {
         ></Notification>
       )}
       {isLoading && <Spinner />}
+      {isError && (
+        <h2>
+          {`${error.data}. Status - ${error.status}. Something went wrong, please
+          try again later.`}
+        </h2>
+      )}
       <ToastContainer />
     </AppContainer>
   );

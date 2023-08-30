@@ -10,29 +10,21 @@ import Spinner from 'components/Spinner';
 import * as Service from 'service';
 
 export default function PhonebookListItem({ id, name, number }) {
-  const [
-    deleteContact,
-    {
-      isLoading: isLoadingDC,
-      isSuccess: isSuccessDC,
-      isError: isErrorDC,
-      error: errorDC,
-    },
-  ] = Service.contactsAPI.useDeleteContactsMutation();
+  const [deleteContact, { isLoading: isLoadingDC }] =
+    Service.contactsAPI.useDeleteContactsMutation();
 
   const deleteContacts = id => {
-    deleteContact(id);
+    deleteContact(id)
+      .unwrap()
+      .then(() =>
+        Service.toastifyMessage.toastSuccess(`Contact deleted successfully!`)
+      )
+      .catch(error =>
+        Service.toastifyMessage.toastError(
+          `${error.data}. Status - ${error.status}. Something went wrong, please try again later.`
+        )
+      );
   };
-
-  if (isSuccessDC) {
-    Service.toastifyMessage.toastSuccess(`Contact deleted successfully!`);
-  }
-
-  if (isErrorDC) {
-    Service.toastifyMessage.toastError(
-      `${errorDC.data}. Status - ${errorDC.status}. Something went wrong, please try again later.`
-    );
-  }
 
   return (
     <ListElement>

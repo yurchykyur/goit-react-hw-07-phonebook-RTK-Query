@@ -31,15 +31,7 @@ const addContactSchema = Yup.object().shape({
 
 export default function ContactForm() {
   const { data: contacts } = useGetContactsQuery();
-  const [
-    updateContacts,
-    {
-      isLoading: isLoadingUC,
-      error: errorUC,
-      isError: isErrorUC,
-      isSuccess: isSuccessUC,
-    },
-  ] = useAddContactsMutation();
+  const [updateContacts, { isLoading: isLoadingUC }] = useAddContactsMutation();
 
   const handleFormSubmit = (newContact, { resetForm }) => {
     const { name } = newContact;
@@ -55,21 +47,19 @@ export default function ContactForm() {
 
       return;
     }
-    updateContacts(newContact);
+    updateContacts(newContact)
+      .unwrap()
+      .then(() =>
+        Service.toastifyMessage.toastSuccess('Contact successfully added!')
+      )
+      .catch(error =>
+        Service.toastifyMessage.toastError(
+          `${error.data}. Status - ${error.status}. Something went wrong, please try again later.`
+        )
+      );
 
     resetForm();
   };
-
-  if (isErrorUC) {
-    console.log(errorUC);
-    Service.toastifyMessage.toastError(
-      `${errorUC.data.msg}. Status - ${errorUC.status}. Something went wrong, please try again later.`
-    );
-  }
-
-  if (isSuccessUC) {
-    Service.toastifyMessage.toastSuccess('Contact successfully added!!');
-  }
 
   return (
     <>
