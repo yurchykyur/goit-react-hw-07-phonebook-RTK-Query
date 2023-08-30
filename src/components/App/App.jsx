@@ -2,7 +2,6 @@ import React from 'react';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Oval } from 'react-loader-spinner';
 
 import ContactForm from 'components/ContactForm';
 import ContactList from 'components/ContactList';
@@ -10,14 +9,10 @@ import Filter from 'components/Filter';
 import ContactAmount from 'components/ContactAmount';
 import Notification from 'components/Notification';
 
-import {
-  AppContainer,
-  MainTitle,
-  SecondTitle,
-  OvalWrapper,
-} from './App.styled';
+import { AppContainer, MainTitle, SecondTitle } from './App.styled';
 
 import * as Service from 'service';
+import Spinner from 'components/Spinner';
 
 export default function App() {
   const {
@@ -47,22 +42,7 @@ export default function App() {
           message={'There are no contacts in your phonebook'}
         ></Notification>
       )}
-      {isLoading && (
-        <OvalWrapper>
-          <Oval
-            height={80}
-            width={80}
-            color="#534da9"
-            wrapperStyle={{}}
-            wrapperClass=""
-            visible={true}
-            ariaLabel="oval-loading"
-            secondaryColor="#4fa94d"
-            strokeWidth={2}
-            strokeWidthSecondary={2}
-          />
-        </OvalWrapper>
-      )}
+      {isLoading && <Spinner />}
       <ToastContainer />
     </AppContainer>
   );

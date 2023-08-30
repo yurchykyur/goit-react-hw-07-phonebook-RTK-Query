@@ -5,25 +5,45 @@ import {
   DeleteBtn,
   ListElement,
 } from 'components/ContactList/ContactList.styled';
+import Spinner from 'components/Spinner';
 
-import { useDeleteContactsMutation } from 'service/contactsAPI';
+import * as Service from 'service';
 
 export default function PhonebookListItem({ id, name, number }) {
-  const [deleteContact, resultDeleteContact] = useDeleteContactsMutation();
+  const [
+    deleteContact,
+    {
+      isLoading: isLoadingDC,
+      isSuccess: isSuccessDC,
+      isError: isErrorDC,
+      error: errorDC,
+    },
+  ] = Service.contactsAPI.useDeleteContactsMutation();
 
   const deleteContacts = id => {
-    console.log(id);
     deleteContact(id);
   };
 
+  if (isSuccessDC) {
+    Service.toastifyMessage.toastSuccess(`Contact deleted successfully!`);
+  }
+
+  if (isErrorDC) {
+    Service.toastifyMessage.toastError(
+      `${errorDC.data}. Status - ${errorDC.status}. Something went wrong, please try again later.`
+    );
+  }
+
   return (
     <ListElement>
-      {resultDeleteContact.isLoading && <h1>Deleting ...</h1>}
       <ContactItemWrapper>
         <ContactItemName>{name}</ContactItemName>
         <ContactItemNum href={`tel:${number}`}>{number}</ContactItemNum>
-        <DeleteBtn onClick={() => deleteContacts(id)}>Delete</DeleteBtn>
+        <DeleteBtn onClick={() => deleteContacts(id)} disabled={isLoadingDC}>
+          {isLoadingDC ? 'Deleting...' : 'Delete'}
+        </DeleteBtn>
       </ContactItemWrapper>
+      {isLoadingDC && <Spinner />}
     </ListElement>
   );
 }

@@ -15,6 +15,8 @@ import {
   useAddContactsMutation,
   useGetContactsQuery,
 } from 'service/contactsAPI';
+import Spinner from 'components/Spinner';
+import * as Service from 'service';
 
 const addContactSchema = Yup.object().shape({
   name: Yup.string()
@@ -29,14 +31,22 @@ const addContactSchema = Yup.object().shape({
 
 export default function ContactForm() {
   const { data: contacts } = useGetContactsQuery();
-  const [updateContacts, result] = useAddContactsMutation();
+  const [
+    updateContacts,
+    {
+      isLoading: isLoadingUC,
+      error: errorUC,
+      isError: isErrorUC,
+      isSuccess: isSuccessUC,
+    },
+  ] = useAddContactsMutation();
 
   const handleFormSubmit = (newContact, { resetForm }) => {
     const { name } = newContact;
 
     if (
-      contacts.length !== 0 &&
-      contacts.find(
+      contacts?.length !== 0 &&
+      contacts?.find(
         contact =>
           contact.name.toLowerCase().trim() === name.toLowerCase().trim()
       )
@@ -45,10 +55,21 @@ export default function ContactForm() {
 
       return;
     }
-    console.log(newContact);
     updateContacts(newContact);
+
     resetForm();
   };
+
+  if (isErrorUC) {
+    console.log(errorUC);
+    Service.toastifyMessage.toastError(
+      `${errorUC.data.msg}. Status - ${errorUC.status}. Something went wrong, please try again later.`
+    );
+  }
+
+  if (isSuccessUC) {
+    Service.toastifyMessage.toastSuccess('Contact successfully added!!');
+  }
 
   return (
     <>
@@ -73,12 +94,13 @@ export default function ContactForm() {
               />
               <StyledErrorMessage component="div" name="number" />
             </FormInputLabel>
-            <FormSubmitBtn type="submit" disabled={result.isLoading}>
+            <FormSubmitBtn type="submit" disabled={isLoadingUC}>
               Add contact
             </FormSubmitBtn>
           </StyledForm>
         </Formik>
       </FormWrapper>
+      {isLoadingUC && <Spinner />}
     </>
   );
 }
